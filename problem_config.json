@@ -1,0 +1,38 @@
+{
+    "entry_point": "multi_trip_vrp_problem:MultiTripVRPProblem",
+    "default_params": {
+      "instance_file": "instances/coordChrist100.dat"
+    },
+    "problem_type": "Multi-Trip Capacitated Vehicle Routing Problem",
+    "description": "In the Multi-Trip CVRP, a fleet of trucks with uniform capacity must serve customers with known demand. Trucks may reset their stock by visiting a depot, and depots can be visited multiple times (modeled by depot copies). Customers are indexed from 0 to nb_customers-1, while depot copies are assigned indices beyond that. The decision variable is a list (of length nb_trucks+1) of visit orders, where the first nb_trucks entries correspond to real trucks and the last entry (the fictive truck) collects unused depot copies. A partition constraint ensures every customer is visited exactly once. For each truck, the route distance is computed as the distance from a fixed depot (index nb_customers) to the first customer, plus the distances between consecutive customers, plus the distance from the last customer back to the depot. Each truck’s route must not exceed a maximum allowed distance, and the total delivered demand must not exceed the truck capacity. The objective is to minimize the total distance traveled (plus any fixed route opening cost).",
+    "keywords": [
+      "vehicle routing",
+      "multi-trip",
+      "depot visits",
+      "CVRP"
+    ],
+    "data_format": {
+      "instance_file": {
+        "format": "A text file in the S. Barreto format for multi-trip CVRP. The file begins with the number of customers and the number of depots, followed by the x and y coordinates of the depots, then the x and y coordinates of the customers. Next, the vehicle capacity is given (already divided by 2). Depot capacity information is skipped. Then, the demand for each customer is provided. The instance is adapted so that depot copies (a fixed number, e.g. 20) are used to allow depots to be visited multiple times. A maximum allowed route distance is also provided, as well as the number of trucks (manually set)."
+      }
+    },
+    "decision_variables": {
+      "visit_orders": {
+        "type": "list of lists of int",
+        "description": "A list of length (nb_trucks+1), where the first nb_trucks elements are lists representing the sequence of locations visited by each truck. Customer locations have indices 0 to nb_customers-1; depot copies have indices starting at nb_customers. The extra (fictive) list collects unassigned depot copies."
+      }
+    },
+    "objective": {
+      "type": "minimization",
+      "function": "Total Distance = Sum_{k in used trucks} (opening_route_cost + route distance)",
+      "description": "Minimize the total distance traveled by all trucks. For each truck, if its route is nonempty, the route distance is computed as the distance from the depot (a fixed index) to the first customer, plus the sum of distances between consecutive customers, plus the distance from the last customer back to the depot. The route must also satisfy the truck capacity and maximum travel distance constraints."
+    },
+    "solution_representation": "A dictionary with key 'visit_orders' mapping to a list of routes (one per truck plus one extra fictive route).",
+    "compatible_optimizers": [
+      "genetic_algorithm",
+      "simulated_annealing",
+      "particle_swarm",
+      "tabu_search"
+    ]
+  }
+  
